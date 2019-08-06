@@ -37,7 +37,7 @@ endif
 ifeq ($(beta),true)
 stack: stack-beta
 else
-stack: stack-release
+
 endif
 
 .PHONY: clean configmap cleanupconfigmap cleanupsecrets cli-passwords dags deploy environment parameters stack
@@ -83,6 +83,11 @@ parameters-stateless: parameters-persistent
 stack-beta: stack-release
 	kubectl apply -f ./implementation/manifests/beta/${deployment_type}
 
-stack-release:
-	kubectl apply -f ./implementation/manifests/release/common/
-	kubectl apply -f ./implementation/manifests/release/${deployment_type}
+stack:
+	kubectl apply -f fastscore-core.yaml
+	kubectl apply -f fastscore-aux.yaml
+	kubectl apply -f fastscore-engines.yaml
+stop:   
+	kubectl delete service fastscore
+	kubectl delete pod fastscore
+	kubectl delete all -l stack=fastscore
